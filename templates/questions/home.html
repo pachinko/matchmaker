@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<form method='POST' action=''> {% csrf_token %}
+{{instance.text}}
+<input type='hidden' name='question_id' value='{{instance.id}}' />
+{% for ans in instance.answer_set.all %}
+<li>
+    <INPUT type='radio' name='answer_id' value='{{ ans.id }}' /> {{ans.text}} <br/>
+</li>
+{% endfor %}
+
+<input type='submit' value = 'save and continue' /> 
+</form>
+
+{% endblock %}
