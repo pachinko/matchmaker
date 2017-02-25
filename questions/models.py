@@ -22,7 +22,7 @@ class Question(models.Model):
 	
 	#def __unicode__(self): 
 	def __str__(self):
-		return self.text[:10]
+		return self.text
 
 
 class Answer(models.Model):
@@ -49,15 +49,19 @@ class UserAnswer(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
 	question = models.ForeignKey(Question)  
 	my_answer = models.ForeignKey(Answer, related_name='user_answer')
+#	my_answer = models.ForeignKey(Answer)
 	my_answer_importance = models.CharField(max_length=50, choices=LEVELS)
+	
 	my_points = models.IntegerField(default=-1)
 	their_answer = models.ForeignKey(Answer, null=True, blank=True, related_name='match_answer')
+#	their_answer = models.ForeignKey(Answer, null=True, blank=True)
 	their_importance = models.CharField(max_length=50, choices=LEVELS)
 	their_points = models.IntegerField(default=-1)
 	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 
-	def __unicode__(self):
+	#def __unicode__(self):
+	def __str__(self):
 		return self.my_answer.text[:10]
 
 
