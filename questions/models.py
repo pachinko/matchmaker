@@ -52,14 +52,13 @@ class UserAnswer(models.Model):
 	my_answer = models.ForeignKey(Answer, related_name='user_answer')
 #	my_answer = models.ForeignKey(Answer)
 	my_answer_importance = models.CharField(max_length=50, choices=LEVELS)
-
 	my_points = models.IntegerField(default=-1)
-	their_answer = models.ForeignKey(Answer, null=True, blank=True, related_name='match_answer')
 
+	their_answer = models.ForeignKey(Answer, null=True, blank=True, related_name='match_answer')
 #	their_answer = models.ForeignKey(Answer, null=True, blank=True)
 	their_importance_level = models.CharField(max_length=50, choices=LEVELS)
-
 	their_points = models.IntegerField(default=-1)
+
 	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 
@@ -84,27 +83,25 @@ def score_importance(importance_level):
 
 
 
-@receiver(pre_save, sender=UserAnswer)
+# @receiver(pre_save, sender=UserAnswer)
 def update_user_answer_score(sender, instance, *args, **kwargs):
 	my_points = score_importance(instance.my_answer_importance)
 	instance.my_points = my_points
 	their_points = score_importance(instance.their_importance_level)
 	instance.their_points = their_points
 
-
-#pre_save.connect(update_user_answer_score, sender=UserAnswer)
-
+pre_save.connect(update_user_answer_score, sender=UserAnswer)
 
 
 # def update_user_answer_score(sender, instance, created, *args, **kwargs):
 # 	my_points = score_importance(instance.my_answer_importance)
 # 	instance.my_points = my_points
-# 	their_points = score_importance(instance.their_importance)
+# 	their_points = score_importance(instance.their_importance_level)
 # 	instance.their_points = their_points
-# 	instance.save() ## don't save like this
-# 	# print sender
-# 	# print instance
-# 	# print created
+# 	# instance.save() ## don't save like this
+# 	# print(sender)
+# 	# print(instance)
+# 	# print(created)
 # 	# if created:
 # 	# 	if instance.my_points == -1:
 # 	# 		my_points = score_importance(instance.my_answer_importance)
@@ -112,10 +109,9 @@ def update_user_answer_score(sender, instance, *args, **kwargs):
 # 	# 		instance.save()
 
 # 	# 	if instance.their_points == -1:
-# 	# 		their_points = score_importance(instance.their_importance)
+# 	# 		their_points = score_importance(instance.their_importance_level)
 # 	# 		instance.their_points = their_points
 # 	# 		instance.save()
-
 
 # post_save.connect(update_user_answer_score, sender=UserAnswer)
 
