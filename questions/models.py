@@ -5,11 +5,11 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 # Create your models here.
 
-class QuestionManager(models.Manager):
-	def get_unanswered(self, user):
-		q1 = Q(useranswer__user=user)
-		qs = self.exclude(q1)
-		return qs
+#class QuestionManager(models.Manager):
+#	def get_unanswered(self, user):
+#		q1 = Q(useranswer__user=user)
+#		qs = self.exclude(q1)
+#		return qs
 
 class Question(models.Model):
 	text = models.TextField()
@@ -17,9 +17,7 @@ class Question(models.Model):
 	draft = models.BooleanField(default=False)
 	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 #	answers = models.ManyToManyField('Answer')
-
-	objects = QuestionManager()
-	
+#	objects = QuestionManager()
 	#def __unicode__(self): 
 	def __str__(self):
 		return self.text
@@ -46,23 +44,28 @@ LEVELS = (
 
 
 class UserAnswer(models.Model):
+	# to point out "who answers it?"
 	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+
 	question = models.ForeignKey(Question)  
+
 	my_answer = models.ForeignKey(Answer, related_name='user_answer')
 #	my_answer = models.ForeignKey(Answer)
 	my_answer_importance = models.CharField(max_length=50, choices=LEVELS)
-	
+
 	my_points = models.IntegerField(default=-1)
 	their_answer = models.ForeignKey(Answer, null=True, blank=True, related_name='match_answer')
+
 #	their_answer = models.ForeignKey(Answer, null=True, blank=True)
-	their_importance = models.CharField(max_length=50, choices=LEVELS)
+	their_importance_level = models.CharField(max_length=50, choices=LEVELS)
+
 	their_points = models.IntegerField(default=-1)
 	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 
 	#def __unicode__(self):
 	def __str__(self):
-		return self.my_answer.text[:10]
+		return self.my_answer.text[:50]
 
 
 
@@ -85,7 +88,7 @@ def score_importance(importance_level):
 def update_user_answer_score(sender, instance, *args, **kwargs):
 	my_points = score_importance(instance.my_answer_importance)
 	instance.my_points = my_points
-	their_points = score_importance(instance.their_importance)
+	their_points = score_importance(instance.their_importance_level)
 	instance.their_points = their_points
 
 
